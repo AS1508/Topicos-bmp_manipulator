@@ -23,10 +23,13 @@
 
 */
 
-void solucion()
+#include "constantes.h"
+
+int solucion(int argc, char* argv[])
 {
 /*
     Aquí deben hacer el código que solucione lo solicitado.
     Todas las funciones utilizadas deben estar declaradas en este archivo, y en su respectivo .h
 */
+    return TODO_OK;
 }
