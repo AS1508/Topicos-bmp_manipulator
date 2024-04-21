@@ -23,7 +23,9 @@
 
 */
 
-void solucion()
+#include "constantes.h"
+
+int solucion(int argc, char* argv[])
 {
 /*
     Aquí deben hacer el código que solucione lo solicitado.
@@ -51,4 +53,5 @@ void solucion()
         t_pixeles[] 1235    5321
         11 23 4f
 */
+    return TODO_OK;
 }
