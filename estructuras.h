@@ -3,9 +3,9 @@
 
 typedef struct
 {
-    unsigned char pixel[3]; 
+    unsigned char pixel[3];
     unsigned int profundidad;  // Esta estructura admite formatos de distinta profundidad de color, a priori utilizaremos s�lo 24 bits.
-}t_pixel;
+} t_pixel;
 
 typedef struct
 {
@@ -15,5 +15,5 @@ typedef struct
     unsigned int ancho;
     unsigned int alto;
     unsigned short profundidad;
-}t_metadata;
+} t_metadata;
 #endif // ESTRUCTURAS_H_INCLUDED
