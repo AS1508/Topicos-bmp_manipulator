@@ -33,7 +33,7 @@
 #include "funciones_estudiante.h"
 
 
-int solucion(int argc, char* argv[])
+void solucion(int argc, char* argv[])
 {
     int i=0, cantidadArgumentos = 0;
     char argumentos[12][TAM], nombreArchivo[TAM];
@@ -41,31 +41,31 @@ int solucion(int argc, char* argv[])
 
     while(i<argc)
     {
-        if((!buscar(&argv, ARGS, C_ARG)) && (!buscar(&argv, IMG, TAM)))
+        if((!buscar(argv, ARGS, C_ARG)) && (!buscar(argv, IMG, TAM)))
                 printf("Argumento/imagen invalido\n");
 
-        if(buscar(&argv, ARGS, C_ARG))
+        if(buscar(argv, ARGS, C_ARG) == 1)
         {
             cantidadArgumentos++;
             strcpy(argumentos[i], argv[i]);
             i++;
         }
-        if(buscar(argv, IMG, TAM))
+        if(buscar(argv, IMG, TAM) == 1)
         {
             strcpy(nombreArchivo, argv[i]);
-            cargaArchivo(&imagen, &nombreArchivo);
-            Menu(&imagen, &argumentos, cantidadArgumentos, &nombreArchivo);
+            cargaArchivo(&imagen, nombreArchivo);
+            menu(&imagen, argumentos, cantidadArgumentos, nombreArchivo);
             cantidadArgumentos = 0;
         }
 
         i++;
     }
-    return 1;
+
 }
 
 /*######## Menu ########*/
 
-void menu(t_imagen* imagen, char* args[][TAM], int cantidad, char* nombre[])
+void menu(t_imagen* imagen, char args[][TAM], int cantidad, char nombre[])
 {
     int i=0;
     char funciones[12][TAM] = { {"--dump"}, {"--negativo"}, {"--escala-de-grises"}, {"--aumentar-contraste"}, {"--reducir-contraste"}, {"--tonalidad-azul"}, {"--tonalidad-verde"}, {"--tonalidad-roja"}, {"--recortar"}, {"--rotar-izquierda"}, {"--rotar-derecha"}, {"--comodin"} };
@@ -73,8 +73,9 @@ void menu(t_imagen* imagen, char* args[][TAM], int cantidad, char* nombre[])
     {
         for(int i=0; i<12; i++)
             if(strcmp(args[i], funciones[i]) != 0)
+                printf("Error");
         if(strcmp(args[i], funciones[i]) == 0)
-            dump(&imagen, &nombre);
+            dump(imagen, nombre);
 
         args++;
         i++;
@@ -95,14 +96,14 @@ void dump(t_imagen* imagen, char nombre[])
     printf("Paso por dump");
 }
 
-int buscar(char* argv[], char* comando[], int cantidad)
+int buscar(char *argv[], char comando, int cantidad)
 {
     printf("Pase por Buscar ");
 
     return 1;
 }
 
-void cargaArchivo(t_imagen *imagen, char *nombreArchivo)
+void cargaArchivo(t_imagen* imagen, char *nombreArchivo)
 {
     FILE *file = fopen(nombreArchivo, "rb");
     if(file == NULL){ exit(1); }

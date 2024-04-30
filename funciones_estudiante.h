@@ -3,7 +3,7 @@
 #include "estructuras.h"
 #define C_ARG 2
 #define TAM 30
-#define ARGS "--"
+#define ARGS '-'
 #define IMG '.'
 
 typedef struct
@@ -13,16 +13,16 @@ typedef struct
     t_pixel imagen;
 } t_imagen;
 
-int solucion(int argc, char* argv[]);
-void menu(t_imagen* imagen, char* args[][TAM], int cantidad, char* nombre[]);
-void cargaArchivo(t_imagen* imagen, char* nombreArchivo);
-void copiaArchivo(t_pixel* pixel, t_metadata* datos, t_imagen* imagen);
-void ordenarReflejo(t_pixel* pixel);
-void rotarIzquierda(t_pixel* pixel);
-void rotarDerecha(t_pixel* pixel);
-int buscar(char* argv[], char* comando[], int cantidad);
+void solucion(int argc, char* argv[]);
+void menu(t_imagen* imagen, char args[][TAM], int cantidad, char nombre[]);
+void cargaArchivo(t_imagen *imagen, char *nombreArchivo);
+void copiaArchivo(t_pixel *pixel, t_metadata *datos, t_imagen *imagen);
+void ordenarReflejo(t_pixel *pixel);
+void rotarIzquierda(t_pixel *pixel);
+void rotarDerecha(t_pixel *pixel);
+int buscar(char *argv[], char comando, int cantidad);
 
-void dump(t_imagen* imagen, char nombre[]);
+void dump(t_imagen *imagen, char nombre[]);
 //Continue
 
 
