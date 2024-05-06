@@ -13,19 +13,23 @@ typedef struct
     t_pixel pixeles;
 } t_imagen;
 
+//General
 int solucion(int argc, char* argv[]);
 int buscar(char arg[], char comando);
 
-void menu(t_imagen imagen, char args[][TAM], int cantidad, char nombre[])
+//menu
+void menu(char args[][TAM], int cantidad, char nombre[]);
 
+//Funciones
 //void cargaArchivo(t_imagen imagen, char *nombreArchivo);
 t_metadata copyData(FILE* archivo);
 
+//Argumentos
 void escalaGrises(char arg[][TAM], int posicion, char arch[]);
 void ordenarReflejo(t_pixel pixel);
 void rotarIzquierda(t_pixel pixel);
 void rotarDerecha(t_pixel pixel);
-void dump(t_imagen imagen, char nombre[]);
+//void dump(char nombre[]);
 //Continue
 
 

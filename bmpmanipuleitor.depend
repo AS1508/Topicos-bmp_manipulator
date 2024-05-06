@@ -24,3 +24,24 @@
 
 1712541473 /home/ezequiel/Progra/BMP/bmpmanipuleitor/constantes.h
 
+1713008534 source:c:\users\alanr\videos\bmpmanipuleitor\main.c
+	<stdio.h>
+	"funciones_estudiante.h"
+	"constantes.h"
+
+1715001133 c:\users\alanr\videos\bmpmanipuleitor\funciones_estudiante.h
+	"estructuras.h"
+	"constantes.h"
+
+1712690694 c:\users\alanr\videos\bmpmanipuleitor\estructuras.h
+
+1712559474 c:\users\alanr\videos\bmpmanipuleitor\constantes.h
+
+1715001267 source:c:\users\alanr\videos\bmpmanipuleitor\funciones_estudiante.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"constantes.h"
+	"estructuras.h"
+	"funciones_estudiante.h"
+

@@ -32,9 +32,8 @@
 
 int solucion(int argc, char* argv[])
 {
-   int i=0, cantidadArgumentos = 0;
+    int i=0, cantidadArgumentos = 0;
     char argumentos[12][TAM], nombreArchivo[TAM] = {0}, buffer[TAM] = {0};
-    t_imagen imagen;
 
 
     while(i<argc)
@@ -47,17 +46,14 @@ int solucion(int argc, char* argv[])
 
         if(buscar(buffer, ARGS) == 1)
         {
-            printf("paso por arg\n");
             cantidadArgumentos++;
             strcpy(argumentos[i], argv[i]);
         }
         if(buscar(buffer, IMG) == 2)
         {
             strcpy(nombreArchivo, argv[i]);
-            //cargaArchivo(&imagen, nombreArchivo);
-            menu(&imagen, argumentos, cantidadArgumentos, nombreArchivo);
+            menu(argumentos, cantidadArgumentos, nombreArchivo);
             cantidadArgumentos = 0;
-            printf("Paso por img\n");
         }
 
         i++;
@@ -69,24 +65,49 @@ int solucion(int argc, char* argv[])
 
 /*######## Menu ########*/
 
-void menu(t_imagen* imagen, char args[][TAM], int cantidad, char nombre[])
+void menu(char args[][TAM], int cantidad, char nombre[])
 {
     int i=0;
-    char funciones[12][TAM] = { {"--dump"}, {"--negativo"}, {"--escala-de-grises"}, {"--aumentar-contraste"}, {"--reducir-contraste"}, {"--tonalidad-azul"}, {"--tonalidad-verde"}, {"--tonalidad-roja"}, {"--recortar"}, {"--rotar-izquierda"}, {"--rotar-derecha"}, {"--comodin"} };
-    while(!args)
+    char funciones[12][TAM] = { {"--dump"},
+        {"--negativo"},
+        {"--escala-de-grises"},
+        {"--aumentar-contraste"},
+        {"--reducir-contraste"},
+        {"--tonalidad-azul"},
+        {"--tonalidad-verde"},
+        {"--tonalidad-roja"},
+        {"--recortar"},
+        {"--rotar-izquierda"},
+        {"--rotar-derecha"},
+        {"--comodin"}
+    };
+    while(i<cantidad)
     {
-        for(int i=0; i<12; i++)
-            if(strcmp(args[i], funciones[i]) != 0)
-                printf("Error");
         if(strcmp(args[i], funciones[i]) == 0)
-            dump(imagen, nombre);
+            dump(nombre);
         if(strcmp(args[i], funciones[i]) == 0)
-            escalaGrises(funciones, 3, nombre);
+            escalaGrises(funciones, 2, nombre);
+        if(strcmp(args[i], funciones[i]) == 0)
+            aumentarContraste(funciones, 3, nombre);
+        if(strcmp(args[i], funciones[i]) == 0)
+            reducirContraste();
+        if(strcmp(args[i], funciones[i]) == 0)
+            tonalidadAzul();
+        if(strcmp(args[i], funciones[i]) == 0)
+            tonalidadVerde();
+        if(strcmp(args[i], funciones[i]) == 0)
+            tonalidadRoja();
+        if(strcmp(args[i], funciones[i]) == 0)
+            recortar();
+        if(strcmp(args[i], funciones[i]) == 0)
+            rotarIzquierda();
+        if(strcmp(args[i], funciones[i]) == 0)
+            rotarDerecha();
+        if(strcmp(args[i], funciones[i]) == 0)
+            comodin();
 
-        args++;
         i++;
     }
-
 }
 
 /*######## Argumentos ########*/
@@ -94,8 +115,6 @@ void menu(t_imagen* imagen, char args[][TAM], int cantidad, char nombre[])
 
 void escalaGrises(char arg[][TAM], int posicion, char arch[])
 {
-    int i = 0, cont = 0;
-
     t_metadata metadataOriginal;
     t_pixel pixelOriginal;
     t_pixel nuevoPixel;
@@ -116,7 +135,7 @@ void escalaGrises(char arg[][TAM], int posicion, char arch[])
         exit(1);
     }
 
-    printf("Creando Archivo \"%s\"\n", arg);
+    printf("Creando Archivo \"%s\"\n", arg[posicion]);
 
     metadataOriginal = copyData(archivo);
 
@@ -124,38 +143,34 @@ void escalaGrises(char arg[][TAM], int posicion, char arch[])
     while(!feof(archivo))
         fwrite(&metadataOriginal, sizeof(t_metadata), 1, archivoNuevo);
 
-    fread(&pixelOriginal, sizeof(t_pixel), 1, archivo);
     while(!feof(archivo))
     {
-        printf("Paso");
-        cont++;
-        fread(&pixelOriginal, sizeof(t_pixel), 1,archivo);
-    }
-    printf("%d\n", cont);
-    while(!feof(archivo))
-    {
-        printf("Paso");
+        //Problema: loopea infinitamente
+        fread(&pixelOriginal, sizeof(pixelOriginal), 1, archivo);
         nuevoPixel.pixel[0] = (pixelOriginal.pixel[0] + pixelOriginal.pixel[1] + pixelOriginal.pixel[2])/3;
         nuevoPixel.pixel[1] = (pixelOriginal.pixel[0] + pixelOriginal.pixel[1] + pixelOriginal.pixel[2])/3;
         nuevoPixel.pixel[2] = (pixelOriginal.pixel[0] + pixelOriginal.pixel[1] + pixelOriginal.pixel[2])/3;
         nuevoPixel.profundidad = pixelOriginal.profundidad;
         fwrite(&nuevoPixel, sizeof(nuevoPixel), 1, archivoNuevo);
-        fread(&pixelOriginal, sizeof(pixelOriginal), 1, archivo);
+
     }
 
-    printf("Archivo creado \"%s\"con exito", grises);
+    printf("Archivo creado \"%s\"con exito", arch);
     fclose(archivo);
     fclose(archivoNuevo);
 
 }
 
+void aumentarConstrate(char arg[][TAM], int posicion, char nombre[])
+{
+
+}
+
 /*######## Funcionalidades ########*/
 
-//void dump(t_imagen* imagen, char nombre[])
+void dump(t_imagen* imagen, char nombre[])
 {
-    //FILE file;
-    //file = fopen( nombre ,"rb");
-    printf("Paso por dump");
+
 }
 
 int buscar(char arg[], char comando)
@@ -173,26 +188,9 @@ int buscar(char arg[], char comando)
     return 0;
 }
 
-void cargaArchivo(t_imagen* imagen, char *nombreArchivo)
-{
-    FILE *file = fopen(nombreArchivo, "rb");
-    if(file == NULL)
-    {
-        exit(1);
-    }
-
-    while(!feof(file))
-        fwrite(&imagen, sizeof(t_imagen), 1, file);
-
-    fclose(file);
-
-}
-
 t_metadata copyData(FILE* archivo)
 {
     t_metadata metadata;
     fread(&metadata, sizeof(t_metadata), 1, archivo);
-    while(!feof(archivo))
-        fread(&metadata, sizeof(t_metadata), 1, archivo);
     return metadata;
 }
