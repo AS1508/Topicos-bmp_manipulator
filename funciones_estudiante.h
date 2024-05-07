@@ -2,8 +2,9 @@
 #define FUNCIONES_ESTUDIANTE_H_INCLUDED
 #include "estructuras.h"
 #include "constantes.h"
-#define C_ARG 2
 #define TAM 30
+#define WIDTH 360
+#define HEIGHT 240
 #define ARGS '-'
 #define IMG '.'
 
@@ -21,16 +22,15 @@ int buscar(char arg[], char comando);
 void menu(char args[][TAM], int cantidad, char nombre[]);
 
 //Funciones
-//void cargaArchivo(t_imagen imagen, char *nombreArchivo);
-t_metadata copyData(FILE* archivo);
+void copyData(FILE*archivoOriginal, FILE*archivoNuevo);
 
 //Argumentos
 void escalaGrises(char arg[][TAM], int posicion, char arch[]);
 void ordenarReflejo(t_pixel pixel);
 void rotarIzquierda(t_pixel pixel);
 void rotarDerecha(t_pixel pixel);
-//void dump(char nombre[]);
-//Continue
+
+void dump(char nombre[]);
 
 
 
