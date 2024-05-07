@@ -87,9 +87,9 @@ void menu(char args[][TAM], int cantidad, char nombre[])
         if(strcmp(args[i], funciones[i]) == 0)
             escalaGrises(funciones, 2, nombre);
         if(strcmp(args[i], funciones[i]) == 0)
-            //aumentarContraste(funciones, 3, nombre);
+        aumentarContraste(funciones, 3, nombre);
         if(strcmp(args[i], funciones[i]) == 0)
-            //reducirContraste();
+            reducirContraste(funciones, 4, nombre);
         if(strcmp(args[i], funciones[i]) == 0)
             //tonalidadAzul();
         if(strcmp(args[i], funciones[i]) == 0)
@@ -104,7 +104,6 @@ void menu(char args[][TAM], int cantidad, char nombre[])
             //rotarDerecha();
         if(strcmp(args[i], funciones[i]) == 0)
             //comodin();
-
         i++;
     }
 }
@@ -135,19 +134,19 @@ void escalaGrises(char arg[][TAM], int posicion, char nombre[])
         exit(1);
     }
 
-    printf("Creando Archivo \"%s\"\n", arg);
+    printf("Creando Archivo \"%s\"\n", arg[posicion]);
 
     //Lecturas y Escrituras
     copyData(archivo, archivoNuevo);
 
     for(int f = 0; f < WIDTH; f++)
+    {
         for(int c = 0; c < HEIGHT; c++)
+        {
             fread(&pixelOriginal[f][c], sizeof(t_pixel), 1, archivo);
-
-    for(int f = 0; f < WIDTH; f++)
-        for(int c = 0; c < HEIGHT; c++)
             temp[f][c] = pixelOriginal[f][c];
-
+        }
+    }
 
     for(int f = 0; f < WIDTH; f++)
     {
@@ -164,20 +163,169 @@ void escalaGrises(char arg[][TAM], int posicion, char nombre[])
     printf("Archivo \"%s\" creado con exito", nArchivo);
     fclose(archivo);
     fclose(archivoNuevo);
-
 }
 
-void aumentarConstrate(char arg[][TAM], int posicion, char nombre[])
+void aumentarContraste(char arg[][TAM], int posicion, char nombre[])
 {
-    printf("Hello");
+    int promedio;
+    char nArchivo[] = {0};
+    t_pixel pixelOriginal[WIDTH][HEIGHT], temp[WIDTH][HEIGHT], pixel[WIDTH][HEIGHT];
+
+    FILE*archivoOriginal = fopen(nombre, "rb");
+    if(archivoOriginal == NULL)
+    {
+        printf("No se pudo abrir el archivo\n");
+        exit(1);
+    }
+
+    strcpy(nArchivo, arg[posicion]);
+    strcat(nArchivo,"-");
+    strcat(nArchivo, nombre);
+
+    FILE*archivo = fopen(nArchivo, "wb");
+    if(archivo == NULL)
+    {
+        printf("No se pudo abrir el archivo\n");
+        exit(1);
+    }
+
+    printf("Creando Archivo \"%s\"\n", arg[posicion]);
+
+    //Lecturas y Escrituras
+    copyData(archivoOriginal, archivo);
+
+    for(int f = 0; f < WIDTH; f++)
+    {
+        for(int c = 0; c<HEIGHT; c++)
+        {
+            fread(&pixelOriginal[f][c], sizeof(t_pixel), 1, archivoOriginal);
+            temp[f][c] = pixelOriginal[f][c];
+        }
+    }
+
+    for(int f = 0; f < WIDTH; f++)
+    {
+        for(int c = 0; c<HEIGHT; c++)
+        {
+            pixel[f][c].profundidad = temp[f][c].profundidad;
+            promedio = promedioPixel(temp[f][c].pixel[0], temp[f][c].pixel[1], temp[f][c].pixel[2]);
+            if(promedio >= 127)
+            {
+                pixel[f][c].pixel[0] = temp[f][c].pixel[0] - (temp[f][c].pixel[0] * 0.25);
+                pixel[f][c].pixel[1] = temp[f][c].pixel[1] - (temp[f][c].pixel[1] * 0.25);
+                pixel[f][c].pixel[2] = temp[f][c].pixel[2] - (temp[f][c].pixel[2] * 0.25);
+            }
+            else
+            {
+                pixel[f][c].pixel[0] = temp[f][c].pixel[0] + (temp[f][c].pixel[0] * 0.25);
+                pixel[f][c].pixel[1] = temp[f][c].pixel[1] + (temp[f][c].pixel[1] * 0.25);
+                pixel[f][c].pixel[2] = temp[f][c].pixel[2] + (temp[f][c].pixel[2] * 0.25);
+            }
+            fwrite(&pixel[f][c], sizeof(t_pixel), 1, archivo);
+        }
+    }
+
+    printf("Archivo \"%s\" creado con exito", nArchivo);
+    fclose(archivoOriginal);
+    fclose(archivo);
 }
 
+void reducirContraste(char arg[][TAM], int posicion, char nombre[])
+{
+    int promedio;
+    char nArchivo[] = {0};
+    t_pixel pixelOriginal[WIDTH][HEIGHT], temp[WIDTH][HEIGHT], pixel[WIDTH][HEIGHT];
+
+    FILE*archivoOriginal = fopen(nombre, "rb");
+    if(archivoOriginal == NULL)
+    {
+        printf("No se pudo abrir el archivo\n");
+        exit(1);
+    }
+
+    strcpy(nArchivo, arg[posicion]);
+    strcat(nArchivo,"-");
+    strcat(nArchivo, nombre);
+
+    FILE*archivo = fopen(nArchivo, "wb");
+    if(archivo == NULL)
+    {
+        printf("No se pudo abrir el archivo\n");
+        exit(1);
+    }
+
+    printf("Creando Archivo \"%s\"\n", arg[posicion]);
+
+    //Lecturas y Escrituras
+    copyData(archivoOriginal, archivo);
+
+    for(int f = 0; f < WIDTH; f++)
+    {
+        for(int c = 0; c<HEIGHT; c++)
+        {
+            fread(&pixelOriginal[f][c], sizeof(t_pixel), 1, archivoOriginal);
+            temp[f][c] = pixelOriginal[f][c];
+        }
+    }
+
+    for(int f = 0; f < WIDTH; f++)
+    {
+        for(int c = 0; c<HEIGHT; c++)
+        {
+            pixel[f][c].profundidad = temp[f][c].profundidad;
+            promedio = promedioPixel(temp[f][c].pixel[0], temp[f][c].pixel[1], temp[f][c].pixel[2]);
+            if(promedio >= 127)
+            {
+                pixel[f][c].pixel[0] = temp[f][c].pixel[0] + (temp[f][c].pixel[0] * 0.25);
+                pixel[f][c].pixel[1] = temp[f][c].pixel[1] + (temp[f][c].pixel[1] * 0.25);
+                pixel[f][c].pixel[2] = temp[f][c].pixel[2] + (temp[f][c].pixel[2] * 0.25);
+            }
+            else
+            {
+                pixel[f][c].pixel[0] = temp[f][c].pixel[0] - (temp[f][c].pixel[0] * 0.25);
+                pixel[f][c].pixel[1] = temp[f][c].pixel[1] - (temp[f][c].pixel[1] * 0.25);
+                pixel[f][c].pixel[2] = temp[f][c].pixel[2] - (temp[f][c].pixel[2] * 0.25);
+            }
+            fwrite(&pixel[f][c], sizeof(t_pixel), 1, archivo);
+        }
+    }
+
+    printf("Archivo \"%s\" creado con exito", nArchivo);
+    fclose(archivoOriginal);
+    fclose(archivo);
+}
 /*######## Funcionalidades ########*/
 
 void dump(char nombre[])
 {
-    printf("Hello");
+    unsigned char buffer[16];
+    int cont = 0;
+
+    FILE *archivo;
+    archivo = fopen(nombre, "rb");
+    if(archivo == NULL)
+    {
+        printf("No se pudo abrir el archivo\n");
+        exit(1);
+    }
+
+    fread(&buffer, sizeof(unsigned char), 16, archivo);
+    while(!feof(archivo))
+    {
+        printf("%04x ", cont);
+        for(int i = 0; i < sizeof(buffer); i++)
+            printf("%02x ", buffer[i]);
+        printf(" | ");
+        for(int i = 0; i < sizeof(buffer); i++)
+            printf("%c", buffer[i]);
+        cont+=sizeof(buffer);
+        printf("\n");
+
+        fread(&buffer, sizeof(unsigned char), 16, archivo);
+    }
+    fclose(archivo);
 }
+
 
 int buscar(char arg[], char comando)
 {
@@ -198,5 +346,15 @@ void copyData(FILE*archivoOriginal, FILE*archivoNuevo)
 {
     unsigned char data[54];
     fread(data, 54, 1, archivoOriginal);
+    if(fread(data, 54, 1, archivoOriginal) != 1)
+    {
+        printf("Error al leer el archivo\n");
+        exit(1);
+    }
     fwrite(data, 54, 1, archivoNuevo);
+}
+
+int promedioPixel(unsigned char valor1, unsigned char valor2,unsigned char valor3)
+{
+    return (valor1+valor2+valor3)/3;
 }
