@@ -97,11 +97,11 @@ void menu(char args[][TAM], int cantidad, char nombre[])
         if(strcmp(args[i], funciones[i]) == 0)
             //tonalidadRoja();
         if(strcmp(args[i], funciones[i]) == 0)
-            //recortar();
+            recortar(funciones, 8, nombre);
         if(strcmp(args[i], funciones[i]) == 0)
             //rotarIzquierda();
         if(strcmp(args[i], funciones[i]) == 0)
-            //rotarDerecha();
+            rotarDerecha(funciones, 10, nombre);
         if(strcmp(args[i], funciones[i]) == 0)
             //comodin();
         i++;
@@ -294,6 +294,138 @@ void reducirContraste(char arg[][TAM], int posicion, char nombre[])
     fclose(archivoOriginal);
     fclose(archivo);
 }
+
+void recortar(char arg[][TAM], int posicion, char nombre[]){
+    FILE*archivo, *archivoRecortado;
+    t_pixel pixel;
+    char nArchivo[] = {0};
+    int inicioImagen, ancho, alto, x, y;
+
+    archivo = fopen(nombre, "rb");
+
+    strcpy(nArchivo, arg[posicion]);
+    strcat(nArchivo,ARGS);
+    strcat(nArchivo, nombre);
+
+    archivoRecortado = fopen(nArchivo, "wb");
+
+    if(archivo == NULL || archivoRecortado == NULL){
+        printf("No se pudo abrir el archivo");
+        exit(1);
+    }
+
+    obtenerPosicion(&archivo, B_IMG, &inicioImagen);
+    copiarHeader(&archivo, &archivoRecortado, inicioImagen);
+
+    fseek(archivo, B_WIDTH, SEEK_CUR);
+    fread(&ancho, sizeof(int), 1, archivo);
+    fseek(archivo, B_HEIGHT, SEEK_CUR);
+    fread(&alto, sizeof(int), 1, archivo);
+    fseek(archivo, B_x, SEEK_CUR);
+    fread(&x, sizeof(int), 1, archivo);
+    fseek(archivo, B_y, SEEK_CUR);
+    fread(&y, sizeof(int), 1, archivo);
+
+    int nuevoAncho = ancho/2;
+    int nuevoAlto = alto/2;
+    int nuevoX = x/2;
+    int nuevoY = y/2;
+    printf("Modifica\n");
+
+    fseek(archivoRecortado, B_WIDTH, SEEK_CUR);
+    fwrite(&nuevoAncho,sizeof(int), 1, archivoRecortado);
+    fseek(archivoRecortado, B_HEIGHT, SEEK_CUR);
+    fwrite(&nuevoAlto, sizeof(int), 1, archivoRecortado);
+    fseek(archivoRecortado, B_x, SEEK_CUR);
+    fwrite(&nuevoX, sizeof(int), 1, archivoRecortado);
+    fseek(archivoRecortado, B_y, SEEK_CUR);
+    fread(&y, sizeof(int), 1, archivoRecortado);
+
+
+    obtenerPosicion(&archivo, B_IMG, &inicioImagen);
+
+    fseek(archivo, inicioImagen, SEEK_SET);
+    fseek(archivoRecortado, inicioImagen, SEEK_SET);
+
+    fread(&pixel, sizeof(pixel), 1, archivo);
+    while(!feof(archivo)){
+        fwrite(&pixel, sizeof(pixel), 1, archivoRecortado);
+        fread(&pixel, sizeof(pixel), 1, archivo);
+    }
+    fclose(archivo);
+
+}
+
+void rotarDerecha(char arg[][TAM], int posicion, char nombre[]){
+    FILE*archivo, *archivoRD;
+    t_pixel pixel[HEIGHT*3][WIDTH*3], temp;
+    char header[54], nArchivo[] = {0};
+    int inicioImagen, ancho, alto, x, y;
+
+    archivo = fopen(nombre, "rb");
+
+    strcpy(nArchivo, arg[posicion]);
+    strcat(nArchivo,ARGS);
+    strcat(nArchivo, nombre);
+
+    archivoRD = fopen(nArchivo, "wb");
+
+    if(archivo == NULL || archivoRD == NULL){
+        printf("No se pudo abrir el archivo");
+        exit(1);
+    }
+
+    obtenerPosicion(&archivo, B_IMG, &inicioImagen);
+    copiarHeader(&archivo, &archivoRD, &inicioImagen);
+
+    fseek(archivo, B_WIDTH, SEEK_CUR);
+    fread(&ancho, sizeof(int), 1, archivo);
+    fseek(archivo, B_HEIGHT, SEEK_CUR);
+    fread(&alto, sizeof(int), 1, archivo);
+    fseek(archivo, B_x, SEEK_CUR);
+    fread(&x, sizeof(int), 1, archivo);
+    fseek(archivo, B_y, SEEK_CUR);
+    fread(&y, sizeof(int), 1, archivo);
+
+    int nuevoAncho = alto;
+    int nuevoAlto = ancho;
+    int nuevoX = y;
+    int nuevoY = x;
+    printf("Modifica\n");
+
+    fseek(archivoRD, B_WIDTH, SEEK_CUR);
+    fwrite(&nuevoAncho,sizeof(int), 1, archivoRD);
+    fseek(archivoRD, B_HEIGHT, SEEK_CUR);
+    fwrite(&nuevoAlto, sizeof(int), 1, archivoRD);
+    fseek(archivoRD, B_x, SEEK_CUR);
+    fwrite(&nuevoX, sizeof(int), 1, archivoRD);
+    fseek(archivoRD, B_y, SEEK_CUR);
+    fread(&y, sizeof(int), 1, archivoRD);
+
+
+    fseek(archivo, inicioImagen, SEEK_SET);
+    fseek(archivoRD, inicioImagen, SEEK_SET);
+
+
+    fread(&temp, sizeof(temp), 1, archivo);
+    for(int c = nuevoX*3; c>0; c-=3){
+        for(int f = 0; f<nuevoY; f++){
+            pixel[f][c-2].pixel[0] = temp.pixel[0];
+            fwrite(&pixel[f][c].pixel[0], sizeof(unsigned char), 1, archivoRD);
+            pixel[f][c--].pixel[1] = temp.pixel[1];
+            fwrite(&pixel[f][c].pixel[1], sizeof(unsigned char), 1, archivoRD);
+            pixel[f][c].pixel[2] = temp.pixel[2];
+            fwrite(&pixel[f][c].pixel[2], sizeof(unsigned char), 1, archivoRD);
+
+            fread(&temp, sizeof(temp), 1, archivo);
+        }
+    }
+
+    printf("Archivo %s creado correctamente", nArchivo);
+    fclose(archivo);
+    fclose(archivoRD);
+}
+
 /*######## Funcionalidades ########*/
 
 void dump(char nombre[])
@@ -345,8 +477,8 @@ int buscar(char arg[], char comando)
 void copyData(FILE*archivoOriginal, FILE*archivoNuevo)
 {
     unsigned char data[54];
-    fread(data, 54, 1, archivoOriginal);
-    if(fread(data, 54, 1, archivoOriginal) != 1)
+    fread(&data, 54, 1, archivoOriginal);
+    if(fread(&data, 54, 1, archivoOriginal) != 1)
     {
         printf("Error al leer el archivo\n");
         exit(1);
@@ -358,3 +490,20 @@ int promedioPixel(unsigned char valor1, unsigned char valor2,unsigned char valor
 {
     return (valor1+valor2+valor3)/3;
 }
+
+void obtenerPosicion(FILE**archivo, int byte, int*posicion){
+    int aux;
+    fseek(*archivo, byte, SEEK_SET);
+    fread(&aux, sizeof(aux), 1, *archivo);
+    *posicion = aux;
+}
+
+void copiarHeader(FILE**archivoOriginal, FILE**archivoNuevo, int inicioDeImagen)
+{
+    fseek(*archivoOriginal,0,SEEK_SET);
+    fseek(*archivoNuevo,0,SEEK_SET);
+    unsigned char encabezado[inicioDeImagen-1];
+    fread(encabezado, sizeof(encabezado), 1, *archivoOriginal);
+    fwrite(encabezado, sizeof(encabezado), 1, *archivoNuevo);
+}
+
